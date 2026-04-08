@@ -39,6 +39,8 @@ _HERMES_CORE_TOOLS = [
     "vision_analyze", "image_generate",
     # Skills
     "skills_list", "skill_view", "skill_manage",
+    # Jira
+    "jira_read", "jira_write",
     # Browser automation
     "browser_navigate", "browser_snapshot", "browser_click",
     "browser_type", "browser_scroll", "browser_back",
@@ -106,6 +108,12 @@ TOOLSETS = {
     "skills": {
         "description": "Access, create, edit, and manage skill documents with specialized instructions and knowledge",
         "tools": ["skills_list", "skill_view", "skill_manage"],
+        "includes": []
+    },
+
+    "jira": {
+        "description": "Jira Cloud API requests for reading and writing tickets",
+        "tools": ["jira_read", "jira_write"],
         "includes": []
     },
     
@@ -231,6 +239,7 @@ TOOLSETS = {
             "read_file", "write_file", "patch", "search_files",
             "vision_analyze",
             "skills_list", "skill_view", "skill_manage",
+            "jira_read", "jira_write",
             "browser_navigate", "browser_snapshot", "browser_click",
             "browser_type", "browser_scroll", "browser_back",
             "browser_press", "browser_get_images",
@@ -255,6 +264,8 @@ TOOLSETS = {
             "vision_analyze", "image_generate",
             # Skills
             "skills_list", "skill_view", "skill_manage",
+            # Jira
+            "jira_read", "jira_write",
             # Browser automation
             "browser_navigate", "browser_snapshot", "browser_click",
             "browser_type", "browser_scroll", "browser_back",
