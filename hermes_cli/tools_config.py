@@ -61,22 +61,6 @@ def _prompt(question: str, default: str = None, password: bool = False) -> str:
         print()
         return default or ""
 
-def _prompt_yes_no(question: str, default: bool = True) -> bool:
-    default_str = "Y/n" if default else "y/N"
-    while True:
-        try:
-            value = input(color(f"{question} [{default_str}]: ", Colors.YELLOW)).strip().lower()
-        except (KeyboardInterrupt, EOFError):
-            print()
-            return default
-        if not value:
-            return default
-        if value in ('y', 'yes'):
-            return True
-        if value in ('n', 'no'):
-            return False
-
-
 # ─── Toolset Registry ─────────────────────────────────────────────────────────
 
 # Toolsets shown in the configurator, grouped for display.
@@ -570,6 +554,7 @@ def _get_platform_tools(
     # MCP servers are expected to be available on all platforms by default.
     # If the platform explicitly lists one or more MCP server names, treat that
     # as an allowlist. Otherwise include every globally enabled MCP server.
+    # Special sentinel: "no_mcp" in the toolset list disables all MCP servers.
     mcp_servers = config.get("mcp_servers") or {}
     enabled_mcp_servers = {
         name
@@ -577,10 +562,15 @@ def _get_platform_tools(
         if isinstance(server_cfg, dict)
         and _parse_enabled_flag(server_cfg.get("enabled", True), default=True)
     }
-    explicit_mcp_servers = explicit_passthrough & enabled_mcp_servers
-    enabled_toolsets.update(explicit_passthrough - enabled_mcp_servers)
+    # Allow "no_mcp" sentinel to opt out of all MCP servers for this platform
+    if "no_mcp" in toolset_names:
+        explicit_mcp_servers = set()
+        enabled_toolsets.update(explicit_passthrough - enabled_mcp_servers - {"no_mcp"})
+    else:
+        explicit_mcp_servers = explicit_passthrough & enabled_mcp_servers
+        enabled_toolsets.update(explicit_passthrough - enabled_mcp_servers)
     if include_default_mcp_servers:
-        if explicit_mcp_servers:
+        if explicit_mcp_servers or "no_mcp" in toolset_names:
             enabled_toolsets.update(explicit_mcp_servers)
         else:
             enabled_toolsets.update(enabled_mcp_servers)
